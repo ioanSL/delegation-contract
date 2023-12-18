@@ -72,7 +72,7 @@ describe("Delegate ERC721", async function () {
                     2,
                     ethers.encodeBytes32String("license to code"),
                     true
-                )).to.be.revertedWith("Receiver is not an ERC721 contract");
+                )).to.be.revertedWith("Asset is not an ERC721 contract");
         });
 
         it("Should not be able to delegate twice", async function () {  

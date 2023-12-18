@@ -61,7 +61,7 @@ contract Delegate is IDelegate {
         bytes32 rights,
         bool enable
     ) external override {
-        require(isERC721(asset), "Receiver is not an ERC721 contract");
+        require(isERC721(asset), "Asset is not an ERC721 contract");
         require(
             IERC721(asset).ownerOf(tokenId) == msg.sender,
             "Sender is not the owner of the token"
@@ -98,10 +98,10 @@ contract Delegate is IDelegate {
         bytes32 rights,
         bool enable
     ) external override {
-        require(isERC1155(asset), "Receiver is not an ERC1155 contract");
+        require(isERC1155(asset), "Asset is not an ERC1155 contract");
         require(
             IERC1155(asset).balanceOf(msg.sender, tokenId) >= amount,
-            "Sender does not have enough balance"
+            "Sender does not have enough balance or is not the owner of the token"
         );
         bytes memory data = abi.encode(tokenId, amount);
         _delegate(receiver, asset, data, rights, enable);
