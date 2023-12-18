@@ -7,14 +7,6 @@ interface IDelegate {
         ACTIVE
     }
 
-    struct Delegation {
-        address delegator;
-        address receiver;
-        address asset;
-        uint256 tokenId;
-        Status status;
-    }
-
     event Delegated(
         address indexed delegator,
         address indexed receiver,
