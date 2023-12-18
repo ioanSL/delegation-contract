@@ -52,6 +52,11 @@ contract Delegate is IDelegate {
         uint256 tokenId,
         bytes32 rights
     ) external override {
+        require(isERC721(asset), "Receiver is not an ERC721 contract");
+        require(
+            IERC721(asset).ownerOf(tokenId) == msg.sender,
+            "Sender is not the owner of the token"
+        );
         bytes32 delegationHash;
         delegationHash = keccak256(
             abi.encodePacked(
@@ -64,7 +69,7 @@ contract Delegate is IDelegate {
         );
         require(
             delegations[delegationHash] == Status.ACTIVE,
-            "Receiver doesn't have a delegation"
+            "Sender does not have a delegation"
         );
 
         delegations[delegationHash] = Status.INACTIVE;

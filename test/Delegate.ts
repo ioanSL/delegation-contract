@@ -103,5 +103,65 @@ describe("Delegate", async function () {
                 ethers.encodeBytes32String("license to code")
             )).to.be.revertedWith("Sender is not the owner of the token");
         });
+
+        it("Should be able to undelegate", async function () {
+            const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
+            const { erc721 } = await loadFixture(deployERC721Fixture);
+
+            await delegate.connect(delegator).delegate(
+                delegatee,
+                erc721.getAddress(),
+                1,
+                ethers.encodeBytes32String("license to code")
+            );
+
+            await delegate.connect(delegator).undelegate(
+                delegatee,
+                erc721.getAddress(),
+                1,
+                ethers.encodeBytes32String("license to code")
+            );
+
+            const delegateStatus = await delegate.checkDelegate(
+                delegator, 
+                delegatee, 
+                erc721.getAddress(), 
+                1, 
+                ethers.encodeBytes32String("license to code")
+            );
+
+            expect(delegateStatus).to.equal(false);
+        });
+
+        it("Should not be able to undelegate if not the owner", async function () {
+            const { delegate, delegator, delegatee, user } = await loadFixture(deployDelegateFixture);
+            const { erc721 } = await loadFixture(deployERC721Fixture);
+
+            await delegate.connect(delegator).delegate(
+                delegatee,
+                erc721.getAddress(),
+                1,
+                ethers.encodeBytes32String("license to code")
+            );
+
+            await expect(delegate.connect(user).undelegate(
+                delegatee,
+                erc721.getAddress(),
+                1,
+                ethers.encodeBytes32String("license to code")
+            )).to.be.revertedWith("Sender is not the owner of the token");
+        });
+
+        it("Should not be able to undelegate if not delegated", async function () {
+            const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
+            const { erc721 } = await loadFixture(deployERC721Fixture);
+
+            await expect(delegate.connect(delegator).undelegate(
+                delegatee,
+                erc721.getAddress(),
+                1,
+                ethers.encodeBytes32String("license to code")
+            )).to.be.revertedWith("Sender does not have a delegation");
+        });
     });
 });
