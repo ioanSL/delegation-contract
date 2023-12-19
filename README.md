@@ -7,9 +7,9 @@ This project aim to provide a solution to delegate on-chain assets ownership to 
 [Implementation Proposal](https://www.notion.so/Proposal-Delegated-assets-30a75de0661e41878d815e7d3ef4a53a?pvs=4)
 
 ```shell
-npx hardhat help
+# Run tests. Use REPORT_GAS=true and set Coinmarketcap api key for more details
 npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+
+# Deploy Delegate and aux contracts to Sepolia Network.
+npx hardhat run scripts/deploy.ts --network sepolia
 ```
