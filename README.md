@@ -12,4 +12,7 @@ npx hardhat test
 
 # Deploy Delegate and aux contracts to Sepolia Network.
 npx hardhat run scripts/deploy.ts --network sepolia
+
+# Delegate ERC721
+npx ts-node scripts/delegateERC721.ts $DELEGATOR $DELEGATEE $ASSET_ADDRESS $TOKENID $LICENSE $true/false
 ```
