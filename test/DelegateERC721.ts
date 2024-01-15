@@ -2,7 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 
-describe("Delegate", async function () {
+describe("Delegate ERC721", async function () {
     async function deployDelegateFixture() {
         const [delegator, delegatee, user] = await ethers.getSigners();
 
@@ -44,14 +44,15 @@ describe("Delegate", async function () {
             const owner = await erc721.ownerOf(1);
             expect(owner).to.equal(await delegator.getAddress());
 
-            await delegate.connect(delegator).delegate(
+            await delegate.connect(delegator).delegateERC721(
                     delegatee,
                     erc721.getAddress(),
                     1,
-                    ethers.encodeBytes32String("license to code")
+                    ethers.encodeBytes32String("license to code"),
+                    true
                 );
 
-            const delegateStatus = await delegate.checkDelegate(
+            const delegateStatus = await delegate.checkDelegateERC721(
                     delegator, 
                     delegatee, 
                     erc721.getAddress(), 
@@ -65,30 +66,33 @@ describe("Delegate", async function () {
             const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
             const { contract } = await loadFixture(deployContract);
 
-            await expect(delegate.connect(delegatee).delegate(
+            await expect(delegate.connect(delegatee).delegateERC721(
                     delegatee,
                     contract.getAddress(),
                     2,
-                    ethers.encodeBytes32String("license to code")
-                )).to.be.revertedWith("Receiver is not an ERC721 contract");
+                    ethers.encodeBytes32String("license to code"),
+                    true
+                )).to.be.revertedWith("Asset is not an ERC721 contract");
         });
 
         it("Should not be able to delegate twice", async function () {  
             const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
             const { erc721 } = await loadFixture(deployERC721Fixture);
 
-            await delegate.connect(delegator).delegate(
+            await delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                true
             );
 
-            await expect(delegate.connect(delegator).delegate(
+            await expect(delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                true
             )).to.be.revertedWith("Receiver already has a delegation");
         });
 
@@ -96,11 +100,12 @@ describe("Delegate", async function () {
             const { delegate, delegator, delegatee, user } = await loadFixture(deployDelegateFixture);
             const { erc721 } = await loadFixture(deployERC721Fixture);
 
-            await expect(delegate.connect(user).delegate(
+            await expect(delegate.connect(user).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                true
             )).to.be.revertedWith("Sender is not the owner of the token");
         });
 
@@ -108,21 +113,23 @@ describe("Delegate", async function () {
             const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
             const { erc721 } = await loadFixture(deployERC721Fixture);
 
-            await delegate.connect(delegator).delegate(
+            await delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                true
             );
 
-            await delegate.connect(delegator).undelegate(
+            await delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                false
             );
 
-            const delegateStatus = await delegate.checkDelegate(
+            const delegateStatus = await delegate.checkDelegateERC721(
                 delegator, 
                 delegatee, 
                 erc721.getAddress(), 
@@ -137,18 +144,20 @@ describe("Delegate", async function () {
             const { delegate, delegator, delegatee, user } = await loadFixture(deployDelegateFixture);
             const { erc721 } = await loadFixture(deployERC721Fixture);
 
-            await delegate.connect(delegator).delegate(
+            await delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                true
             );
 
-            await expect(delegate.connect(user).undelegate(
+            await expect(delegate.connect(user).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"),
+                false
             )).to.be.revertedWith("Sender is not the owner of the token");
         });
 
@@ -156,11 +165,12 @@ describe("Delegate", async function () {
             const { delegate, delegator, delegatee } = await loadFixture(deployDelegateFixture);
             const { erc721 } = await loadFixture(deployERC721Fixture);
 
-            await expect(delegate.connect(delegator).undelegate(
+            await expect(delegate.connect(delegator).delegateERC721(
                 delegatee,
                 erc721.getAddress(),
                 1,
-                ethers.encodeBytes32String("license to code")
+                ethers.encodeBytes32String("license to code"), 
+                false
             )).to.be.revertedWith("Sender does not have a delegation");
         });
     });

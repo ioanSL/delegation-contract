@@ -1,28 +1,30 @@
 import { ethers } from "hardhat";
+import fs from "fs";
 
-async function deployDelegate() {
-  const delegate = await ethers.deployContract("Delegate");
+async function deployContract(contractName: string) {
+  const contract = await ethers.deployContract(contractName);
 
-  await delegate.waitForDeployment();
+  await contract.waitForDeployment();
 
-  console.log(`Delegate deployed to ${delegate.target}`);
+  console.log(`Delegate deployed to ${contract.target}`);
+
+  // Save delegate.target to .env file
+  fs.writeFileSync(
+    ".env", 
+    `\n${contractName.toUpperCase()}_TARGET=${contract.target}`, 
+    { flag: "a" }
+  );
 }
 
-async function deployERC721() {
-  const erc721 = await ethers.deployContract("MockERC721");
-
-  await erc721.waitForDeployment();
-
-  console.log(`Mock ERC721 deployed to ${erc721.target}`);
-}
 
 async function main() {
-  await deployERC721();
-  await deployDelegate();
+  await deployContract("Delegate");
+  await deployContract("LicenseCheck");
+
+  console.log("Done! Check .env file for deployed contract addresses.");
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
